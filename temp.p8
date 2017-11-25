@@ -1,35 +1,108 @@
 pico-8 cartridge // http://www.pico-8.com
 version 14
 __lua__
-col = 0
-
 
 function _init()
 	camx = 0
 	camy = 0
 	palt(15, true)
 	palt(0, false)
+
+	player = {x=30, y=30, width=4, height=4, task=0, currentclue=1}
+
+	all_sprites = {}
+
+	for i = 0, 128 do
+		for j = 0, 128 do 
+			sprite_num = mget(i,j)
+			if fget(sprite_num, 0) then
+			 new_sprite = {i,j}
+			 add(all_sprites, new_sprite)
+			end	 
+		end
+	end 
+
+	
+	collided = false
+
+	game = {}
+	game.state_mode = 0
+	game.objects_array = {}
+
+	cls()
+	titleinit()
 end
 
+
+function detect(sprite_one)
+	if (  ((player.x + player.width) == (sprite_one.x - sprite_one.width)) 
+		and ((player.y + player.height) > (sprite_one.y - sprite_one.height)) 
+		and (player.y - player.height) < (sprite_one.y + sprite_one.height) 
+		and fget(sprite.i, 0)	)
+		then
+		player.x -= 1
+		return true
+
+	elseif ( ((player.y + player.height) == (sprite_one.y - sprite_one.height)) 
+		and ((player.x + player.width) > (sprite_one.x - sprite_one.width)) 
+		and (player.x - player.width) < (sprite_one.x + sprite_one.width) 
+		and fget(sprite.i,0)	)
+		then
+		player.y -= 1
+		return true
+
+	elseif (  ((player.x - player.width) == (sprite_one.x + sprite_one.width)) 
+		and ((player.y + player.height) > (sprite_one.y - sprite_one.height)) 
+		and (player.y - player.height) < (sprite_one.y + sprite_one.height) 
+		and fget(sprite.i,0)	)
+		then
+		player.x += 1
+		return true
+
+	elseif ( ((player.y - player.height) == (sprite_one.y + sprite_one.height)) 
+		and ((player.x + player.width) > (sprite_one.x - sprite_one.width)) 
+		and (player.x - player.width) < (sprite_one.x + sprite_one.width) 
+		and fget(sprite.i,0) )
+		then
+		player.y += 1
+		return true
+
+
+	end
+
+end
+
+function move()
+	if (btn(0)) player.x -= 1
+	if (btn(1)) player.x += 1
+	if (btn(2)) player.y -= 1
+	if (btn(3)) player.y += 1
+end
+
+
 function _update()
+
+	state_machine_update()
+	move()
+	detect(all_sprites[1])
+	detect(all_sprites[2])
+	
 	if btn(0) then camx -= 1 end
 	if btn(1) then camx += 1 end 
 	if btn(2) then camy -= 1 end
 	if btn(3) then camy += 1 end
 	camera(camx, camy)
 	
-	col += 1
 end
 
 function _draw()
 	cls()
+
 	palt(14,true)
+
+	state_machine_draw()
 		
-	draw_top_floor()
-	draw_objects()
 	
-	spr(1,40,50)
- spr(2,40,58)
 end
 
 function draw_top_floor()
@@ -37,9 +110,99 @@ function draw_top_floor()
 end
 
 function draw_objects()
-
+    spr(1,camx+64,camy+54)
+    spr(2,camx+64,camy+60)
 end
 
+
+function titleinit()
+    game.state_mode = 0
+    --add things to happen in title screen
+end
+
+function gameinit()
+    game.state_mode = 1
+    game.state_game = 1
+    player.task = "suit"
+    -- what to do at the start of the play session
+end
+
+function state_machine_update()
+    if(game.state_mode == 0) then --title screen mode
+        titleupdate()
+    elseif(game.state_mode == 1) then -- game ongoing
+        gameupdate() end
+end
+
+function titleupdate()
+    if(btn(4,0)) then -- pressed z then move()starts game
+        cls()
+        gameinit()
+    end
+end
+ 
+function gameupdate()
+    --todo
+    --here place the processes used in common in all states, ex movement
+   if(player.task == "suit") then  --if current task is searching for suit then sees in what part of the clues he is in
+        if(player.currentclue == 1) then
+            return
+            --checks if player got the clue, in that case stores the current clue
+        elseif(player.currentclue == 2) then
+            print("does things")
+        elseif(player.currentclue == 3) then
+            print("final clue")
+        end    
+    elseif(player.task == "suitcase") then  --if current task is searching for suit then sees in what part of the clues he is in
+        if(player.currentclue == 1) then
+            print("does it achieved the first clue")
+            --checks if player got the clue, in that case stores the current clue
+        elseif(player.currentclue == 2) then
+            print("does things")
+        elseif(player.currentclue == 3) then
+            print("final clue")
+        end
+    elseif(player.task == "papers") then  --if current task is searching for suit then sees in what part of the clues he is in
+        if(player.currentclue == 1) then
+            print("does it achieved the first clue")
+            --checks if player got the clue, in that case stores the current clue
+        elseif(player.currentclue == 2) then
+            print("does things")
+        elseif(player.currentclue == 3) then
+            print("final clue")
+        end
+    elseif(player.task == "keys") then  --if current task is searching for suit then sees in what part of the clues he is in
+        if(player.currentclue == 1) then
+            print("does it achieved the first clue")
+            --checks if player got the clue, in that case stores the current clue
+        elseif(player.currentclue == 2) then
+            print("does things")
+        elseif(player.currentclue == 3) then
+            print("final clue")
+        end
+    end
+ 
+end
+ 
+function state_machine_draw()
+    if(game.state_mode == 0 ) then --draws game screen
+        initscreen_draw()
+    elseif(game.state_mode == 1) then
+        gamedraw() end
+end
+ 
+
+function initscreen_draw()
+ 
+    print("game name",45,45,7)
+    print("click z to start the game",15,64,7)
+end
+
+function gamedraw()
+
+    draw_top_floor()
+    draw_objects()
+end
 __gfx__
 00000000eee1ceee0005555444444444044449993333333344444444888888990000000077666666666666666666666666666665499999990040444400000000
 00000000ee11ccee0000555e44444444044449993333333344444444888889990000000077766666666665556666666666666555449999990004044400000000
@@ -171,7 +334,7 @@ eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
 __gff__
-0000000000008000000101010100000001010000000000000001010101000100000100000100000000010101010000000001010101010100000101010101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0001010000008000000101010100000001010000000000000001010101000100000100000100000000010101010000000001010101010100000101010101000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080008000000000008000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __map__
 0808080808080808080808313131313131313131000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
