@@ -10,7 +10,7 @@ Frantically **dash through every room**, grabbing your suit, car keys and more a
 The obligatory theme was **DISCOVERY**. With such a broad topic we preferred to separate ourselves from maybe the more direct space exploration, tomb raiding experiences and apply the 'finding' aspect to a more **unusual theme**.
 
 ## Team
-This project was made possible :  
+This project was made possible due to these blokes' dedication:  
 <ul>
   <li>Carlos Freitas (<a href=https://github.com/carlosFr97>@carlosfr97</a>): <strong>code</strong></li>
   <li>Diogo Dores (<a href=https://github.com/diogodores>@diogodores</a>): <strong>script</strong> and <strong>code</strong></li>
