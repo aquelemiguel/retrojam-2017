@@ -1,4 +1,4 @@
-# retrojam-pico-8
+# retrojam-2017
 
 Our 2<sup>nd</sup> place entry for IEEE & Porto Graphics' 2017 RETRO JAM was **'BOB'**, a game entirely developed for the **PICO-8 fantasy console** by a team of five FEUP computer engineering students.  
 See every entry over [here](https://github.com/AJRamos308/RetroJam-Submissions).
